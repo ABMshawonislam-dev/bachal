@@ -53,11 +53,14 @@ const Registration = () => {
       })
       return
     }
+    var pattern = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/;
 
-    if(!password){
+    
+
+    if(!password ){
       setValues({
         ...values,
-        error: "Enter an password"
+        error: "Enter an password includes Capital LOwer Symbol Number Plane Emoji"
       })
       return
     }
@@ -69,9 +72,9 @@ const Registration = () => {
     createUserWithEmailAndPassword(auth,email,password).then((user)=>{
       console.log(user)
       sendEmailVerification(auth.currentUser)
-  .then(() => {
-    console.log("Email Send")
-  });
+      .then(() => {
+        console.log("Email Send")
+      });
       setValues({
         email: "",
         fullName: "",
@@ -131,6 +134,10 @@ const Registration = () => {
             :
             <Button onClick={handleSubmit} variant="contained">Sign up</Button>
             }
+
+                <Alert severity="error" style={{marginBottom: "20px"}}>
+                  Forgot PAssword<strong> <Link to="/forgotpassword">Click Here</Link></strong>
+                </Alert>
            
             
           </div>
