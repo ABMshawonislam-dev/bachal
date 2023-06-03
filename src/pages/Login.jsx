@@ -57,7 +57,7 @@ const Login = () => {
         notify("Please varify Email for login")
       }else{
 
-        navigate("/home")
+        navigate("/bachal/home")
       }
 
       console.log(user)
