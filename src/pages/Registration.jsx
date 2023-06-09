@@ -3,7 +3,8 @@ import {Grid,TextField,Button,Alert} from '@mui/material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import registrationimg from "../assets/registrationimg.png"
 import Headingforreglog from '../components/headingforreglog';
-import { getAuth, createUserWithEmailAndPassword,sendEmailVerification } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword,sendEmailVerification,updateProfile } from "firebase/auth";
+import { getDatabase, ref, set,push } from "firebase/database";
 import { useNavigate,Link } from 'react-router-dom';
 import {RiEyeFill,RiEyeCloseFill} from "react-icons/ri"
 
@@ -19,6 +20,7 @@ let initialValues = {
 const Registration = () => {
 
   const auth = getAuth();
+  const db = getDatabase();
 
   let navigate = useNavigate()
 
@@ -70,11 +72,26 @@ const Registration = () => {
       loading: true
     })
     createUserWithEmailAndPassword(auth,email,password).then((user)=>{
-      console.log(user)
-      sendEmailVerification(auth.currentUser)
-      .then(() => {
-        console.log("Email Send")
-      });
+
+
+
+      updateProfile(auth.currentUser, {
+        displayName: values.fullName, photoURL: "https://i.ibb.co/y0F2SLf/avatar.png"
+      }).then(() => {
+        sendEmailVerification(auth.currentUser)
+        .then(() => {
+          console.log("Email Send")
+                console.log(user)
+            set(ref(db, 'users/'+user.user.uid), {
+              username: values.fullName,
+              email: values.email,
+              profile_picture : user.user.photoURL
+            });
+        });
+      })
+
+
+      
       setValues({
         email: "",
         fullName: "",
@@ -102,7 +119,7 @@ const Registration = () => {
                 
             </div>
             <div className='regInput'>
-             <TextField value={values.fullName} onChange={handleValues} name="fullName" id="outlined-basic" label="Full Name" variant="outlined" />
+             <TextField type='text' value={values.fullName} onChange={handleValues} name="fullName" id="outlined-basic" label="Full Name" variant="outlined" />
              {values.error.includes("name") && <Alert severity="error">{values.error}</Alert>}
             </div>
             <div className='regInput'>
