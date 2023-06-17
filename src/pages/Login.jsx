@@ -6,7 +6,12 @@ import google from "../assets/google.png"
 import { getAuth, signInWithEmailAndPassword,GoogleAuthProvider,signInWithPopup } from "firebase/auth";
 import Headingforreglog from '../components/headingforreglog';
 import { Link, useNavigate } from 'react-router-dom';
-  import {  toast } from 'react-toastify';
+import {  toast } from 'react-toastify';
+import { useDispatch } from 'react-redux'
+import { userdata } from '../slices/user/userSlice';
+
+
+
 
 let initialValues = {
   email: "",
@@ -21,7 +26,7 @@ const Login = () => {
   const auth = getAuth();
   const provider = new GoogleAuthProvider();
   let navigate = useNavigate()
-
+  let dispatch = useDispatch()
   
 
   let [values,setValues] = useState(initialValues)
@@ -45,22 +50,25 @@ const Login = () => {
       loading: true
     })
     signInWithEmailAndPassword(auth,email,password).then((user)=>{
-      console.log(user)
+
       setValues({
         email: "",
         password: "",
         loading: false
       })
 
-      console.log(user.user.emailVerified)
+     
       if(!user.user.emailVerified){
         notify("Please varify Email for login")
       }else{
 
+        dispatch(userdata(user.user))
+        localStorage.setItem("user",JSON.stringify(user.user))
         navigate("/bachal/home")
+
       }
 
-      console.log(user)
+   
     }).catch((error) => {
             const errorCode = error.code;
             const errorMessage = error.message;
