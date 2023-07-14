@@ -1,136 +1,67 @@
-import React from 'react'
-import profile from "../assets/profile.png"
-import Button from '@mui/material/Button';
+import React, { useEffect, useState } from "react";
+import profile from "../assets/profile.png";
+import Button from "@mui/material/Button";
+import { getDatabase, ref, onValue, remove } from "firebase/database";
+import { useSelector } from "react-redux";
 
 const Block = () => {
+  const db = getDatabase();
+
+  let [blocklist, setBlocklist] = useState([]);
+
+  let userData = useSelector((state) => state.loggedUser.loginUser);
+
+  useEffect(() => {
+    const blockRef = ref(db, "block");
+    onValue(blockRef, (snapshot) => {
+      let arr = [];
+
+      snapshot.forEach((item) => {
+        arr.push({ ...item.val(), id: item.key });
+      });
+      setBlocklist(arr);
+    });
+  }, []);
+
+  let handleunblock = (item) => {
+    remove(ref(db, "block/" + item.id));
+  };
+
   return (
-    <div className='box'>
-    <h3 >Friend Request
+    <div className="box">
+      <h3>Block User</h3>
 
-    </h3>
-    
-    <div className="list">
-        <div className="img">
-            <img src={profile}/>
-        </div>
-        <div className="details">
-            <h4>Friends Reunion</h4>
-            <p>Hi Guys, Wassup!</p>
-        </div>
-        <div className="button">
-        <Button size="small" variant="contained">Join</Button>
-        </div> 
-    </div>
-    <div className="list">
-        <div className="img">
-            <img src={profile}/>
-        </div>
-        <div className="details">
-            <h4>Friends Reunion</h4>
-            <p>Hi Guys, Wassup!</p>
-        </div>
-        <div className="button">
-        <Button size="small" variant="contained">Join</Button>
-        </div> 
-    </div>
-    <div className="list">
-        <div className="img">
-            <img src={profile}/>
-        </div>
-        <div className="details">
-            <h4>Friends Reunion</h4>
-            <p>Hi Guys, Wassup!</p>
-        </div>
-        <div className="button">
-        <Button size="small" variant="contained">Join</Button>
-        </div> 
-    </div>
-    <div className="list">
-        <div className="img">
-            <img src={profile}/>
-        </div>
-        <div className="details">
-            <h4>Friends Reunion</h4>
-            <p>Hi Guys, Wassup!</p>
-        </div>
-        <div className="button">
-        <Button size="small" variant="contained">Join</Button>
-        </div> 
-    </div>
-    <div className="list">
-        <div className="img">
-            <img src={profile}/>
-        </div>
-        <div className="details">
-            <h4>Friends Reunion</h4>
-            <p>Hi Guys, Wassup!</p>
-        </div>
-        <div className="button">
-        <Button size="small" variant="contained">Join</Button>
-        </div> 
-    </div>
-    <div className="list">
-        <div className="img">
-            <img src={profile}/>
-        </div>
-        <div className="details">
-            <h4>Friends Reunion</h4>
-            <p>Hi Guys, Wassup!</p>
-        </div>
-        <div className="button">
-        <Button size="small" variant="contained">Join</Button>
-        </div> 
-    </div>
-    <div className="list">
-        <div className="img">
-            <img src={profile}/>
-        </div>
-        <div className="details">
-            <h4>Friends Reunion</h4>
-            <p>Hi Guys, Wassup!</p>
-        </div>
-        <div className="button">
-        <Button size="small" variant="contained">Join</Button>
-        </div> 
-    </div>
-    <div className="list">
-        <div className="img">
-            <img src={profile}/>
-        </div>
-        <div className="details">
-            <h4>Friends Reunion</h4>
-            <p>Hi Guys, Wassup!</p>
-        </div>
-        <div className="button">
-        <Button size="small" variant="contained">Join</Button>
-        </div> 
-    </div>
-    <div className="list">
-        <div className="img">
-            <img src={profile}/>
-        </div>
-        <div className="details">
-            <h4>Friends Reunion</h4>
-            <p>Hi Guys, Wassup!</p>
-        </div>
-        <div className="button">
-        <Button size="small" variant="contained">Join</Button>
-        </div> 
-    </div>
-    <div className="list">
-        <div className="img">
-            <img src={profile}/>
-        </div>
-        <div className="details">
-            <h4>Friends Reunion</h4>
-            <p>Hi Guys, Wassup!</p>
-        </div>
-        <div className="button">
-        <Button size="small" variant="contained">Join</Button>
-        </div> 
-    </div>
-</div>
-  )
-}
+      {blocklist.map((item) => (
+        <>
+          <div className="list">
+            <div className="img">
+              <img src={profile} />
+            </div>
+            <div className="details">
+              {item.blockbyid == userData.uid ? (
+                <h4>{item.blockedname}</h4>
+              ) : (
+                <h4>{item.blockbyname}</h4>
+              )}
 
-export default Block
+              <p>Hi Guys, Wassup!</p>
+            </div>
+            <div className="button">
+              {item.blockbyid == userData.uid && (
+                <Button
+                  onClick={() => handleunblock(item)}
+                  size="small"
+                  variant="contained"
+                >
+                  Unblock
+                </Button>
+              )}
+            </div>
+          </div>
+        </>
+      ))}
+    </div>
+  );
+};
+
+export default Block;
