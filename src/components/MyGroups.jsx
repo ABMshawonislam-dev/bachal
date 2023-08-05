@@ -10,11 +10,23 @@ import Divider from '@mui/material/Divider';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
-import { getDatabase, ref, onValue,remove } from "firebase/database";
+import { getDatabase, ref, onValue,remove,set,push } from "firebase/database";
 import { useSelector } from "react-redux";
 
 
 const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+  };
+
+  const style2 = {
     position: 'absolute',
     top: '50%',
     left: '50%',
@@ -32,7 +44,35 @@ const MyGroups = () => {
 
     let [myGroupList,setMyGroupList] = useState([])
     let [myGroupReqList,setMyGroupReqList] = useState([])
+    let [myMembersList,setMyMembersList] = useState([])
     const [open, setOpen] = React.useState(false);
+    const [open2, setOpen2] = React.useState(false);
+
+    let loginUser = useSelector((state) => state.loggedUser.loginUser);
+
+    const handleOpen2 = (member) => {
+      const groupRef = ref(db, 'members');
+      onValue(groupRef, (snapshot) => {
+          let arr = []
+          snapshot.forEach(item=>{
+              if(loginUser.uid == item.val().adminid && item.val().groupid == member.groupid){
+                  arr.push({...item.val(), memberid:item.key})
+              }
+          })
+          setMyMembersList(arr)
+      });
+      setOpen2(true)
+     
+
+
+    };
+  const handleClose2 = () => setOpen2(false);
+
+
+
+
+
+
   const handleOpen = (group) =>{
     const groupRef = ref(db, 'grouprequest');
     onValue(groupRef, (snapshot) => {
@@ -50,7 +90,7 @@ const MyGroups = () => {
   } 
   const handleClose = () => setOpen(false);
 
-    let loginUser = useSelector((state) => state.loggedUser.loginUser);
+    
 
     useEffect(()=>{
         const groupRef = ref(db, 'groups');
@@ -70,8 +110,18 @@ const MyGroups = () => {
 
     }
 
+    let handleMemberAccept = (item)=>{
+      console.log(item)
+      set(push(ref(db, 'members/')), {
+        ...item
+      }).then(()=>{
+        remove(ref(db, "grouprequest/" + item.groupreqid));
+      })
+    }
+
     
   return (
+    
     <div className='box'>
     <h3 className='title'>My Groups
         <Button size="small" variant="contained">Create Group</Button>
@@ -91,12 +141,12 @@ const MyGroups = () => {
             </div>
             <div className="button">
             <Button onClick={()=>handleOpen(item)} size="small" variant="contained">Request</Button>
-            <Button size="small" variant="contained" color='success'>Member</Button>
+            <Button onClick={()=>handleOpen2(item)} size="small" variant="contained" color='success'>Member</Button>
             </div> 
         </div>
 
     ))}
-    
+    {/* group request modal start */}
     <Modal
         open={open}
         onClose={handleClose}
@@ -129,8 +179,64 @@ const MyGroups = () => {
                     </Typography>
                     {" — Wants to join your group"}
                     <br/>
-                    <Button size="small" variant="contained" color='success'>Accept</Button>
+                    <Button onClick={()=>handleMemberAccept(item)} size="small" variant="contained" color='success'>Accept</Button>
                     <Button onClick={()=>handleGroupDelete(item)} size="small" variant="contained" color='error'>Delete</Button>
+                    </React.Fragment>
+                    
+                }
+                />
+                
+              
+               
+              
+            </ListItem>
+            
+            
+            <Divider variant="inset" component="li" />
+                </>
+            ))}
+
+            
+      
+    </List>
+          </Typography>
+        </Box>
+      </Modal>
+      {/* group request modal end */}
+
+      <Modal
+        open={open2}
+        onClose={handleClose2}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style2}>
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+            Group Members
+          </Typography>
+          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+          <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+            {myMembersList.map(item=>(
+                <>
+                <ListItem alignItems="flex-start">
+                <ListItemAvatar>
+                <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+                </ListItemAvatar>
+                <ListItemText
+                primary={item.username}
+                secondary={
+                    <React.Fragment>
+                    <Typography
+                        sx={{ display: 'inline' }}
+                        component="span"
+                        variant="body2"
+                        color="text.primary"
+                    >
+                        
+                    </Typography>
+                    {" — Wants to join your group"}
+                    <br/>
+                    <Button onClick={()=>handleGroupDelete(item)} size="small" variant="contained" color='error'>Remove</Button>
                     </React.Fragment>
                     
                 }
