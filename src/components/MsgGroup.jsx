@@ -7,9 +7,10 @@ import {
   set,
   push,
 } from "firebase/database";
-import { useSelector } from "react-redux";
 import profile from "../assets/profile.png";
 import Button from "@mui/material/Button";
+import { useSelector, useDispatch } from "react-redux";
+import { activeChat } from "../slices/activechat/activeChatSlice";
 
 const MsgGroup = () => {
   const db = getDatabase();
@@ -18,6 +19,7 @@ const MsgGroup = () => {
   let [member, setMember] = useState([]);
 
   let loginUser = useSelector((state) => state.loggedUser.loginUser);
+  let dispatch = useDispatch();
 
   useEffect(() => {
     const groupRef = ref(db, "groups");
@@ -35,17 +37,30 @@ const MsgGroup = () => {
     onValue(groupRef, (snapshot) => {
       let arr = [];
       snapshot.forEach((item) => {
-        arr.push(item.val().userid);
+        console.log(item.val());
+
+        arr.push(item.val());
       });
       setMember(arr);
     });
   }, []);
 
+  let handleOpen2 = (item) => {
+    console.log(item);
+    dispatch(
+      activeChat({
+        type: "groupmsg",
+        name: item.groupname,
+        id: item.groupid,
+      })
+    );
+  };
+
   return (
     <div className="box">
-
+      <h1>{JSON.stringify(member.includes(loginUser.uid))}</h1>
       {myGroupList.map((item) =>
-        loginUser.uid == item.adminid || member.indexOf(loginUser.uid) != -1 ? (
+        loginUser.uid == item.adminid ? (
           <div className="list">
             <div className="img">
               <img src={profile} />
@@ -62,12 +77,37 @@ const MsgGroup = () => {
                 variant="contained"
                 color="success"
               >
-                Member
+                admin
               </Button>
             </div>
           </div>
         ) : (
-          <h1>nai</h1>
+          member.map(
+            (mem) =>
+              loginUser.uid == mem.userid &&
+              item.groupid == mem.groupid && (
+                <div className="list">
+                  <div className="img">
+                    <img src={profile} />
+                  </div>
+                  <div className="details">
+                    <p style={{ fontSize: "12px" }}>Admin: {mem.adminname}</p>
+                    <h4>{mem.groupname}</h4>
+                    <p>{mem.grouptagline}</p>
+                  </div>
+                  <div className="button">
+                    <Button
+                      onClick={() => handleOpen2(item)}
+                      size="small"
+                      variant="contained"
+                      color="success"
+                    >
+                      Member
+                    </Button>
+                  </div>
+                </div>
+              )
+          )
         )
       )}
     </div>

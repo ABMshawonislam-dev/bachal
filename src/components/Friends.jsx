@@ -9,14 +9,16 @@ import {
   onValue,
   remove,
 } from "firebase/database";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { activeChat } from "../slices/activechat/activeChatSlice";
 
-const Friends = () => {
+const Friends = ({ button }) => {
   const db = getDatabase();
 
   let [friends, setFriends] = useState([]);
 
   let userData = useSelector((state) => state.loggedUser.loginUser);
+  let dispatch = useDispatch();
 
   useEffect(() => {
     const friendsRef = ref(db, "friends");
@@ -64,6 +66,27 @@ const Friends = () => {
     }
   };
 
+  let handleMsg = (item) => {
+    if (item.whosendid == userData.uid) {
+
+      dispatch(
+        activeChat({
+          type: "singlemsg",
+          name: item.whoreceivename,
+          id: item.whoreceiveid,
+        })
+      );
+    } else {
+      dispatch(
+        activeChat({
+          type: "singlemsg",
+          name: item.whosendname,
+          id: item.whosendid,
+        })
+      );
+    }
+  };
+
   return (
     <div className="box">
       <h3>Friend Request</h3>
@@ -83,21 +106,33 @@ const Friends = () => {
               <p>Hi Guys, Wassup!</p>
             </div>
             <div className="button">
-              <Button
-                onClick={() => handleBlock(item)}
-                size="small"
-                variant="contained"
-              >
-                Block
-              </Button>
-              <Button
-                onClick={() => handleUnFriend(item)}
-                size="small"
-                variant="contained"
-                color="error"
-              >
-                Cancel
-              </Button>
+              {button == "msg" ? (
+                <Button
+                  onClick={() => handleMsg(item)}
+                  size="small"
+                  variant="contained"
+                >
+                  msg
+                </Button>
+              ) : (
+                <>
+                  <Button
+                    onClick={() => handleBlock(item)}
+                    size="small"
+                    variant="contained"
+                  >
+                    Block
+                  </Button>
+                  <Button
+                    onClick={() => handleUnFriend(item)}
+                    size="small"
+                    variant="contained"
+                    color="error"
+                  >
+                    Cancel
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         </>
