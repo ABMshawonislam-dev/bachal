@@ -1,11 +1,30 @@
-import React from "react";
+import React, { useState } from "react";
 import profile from "../assets/profile.png";
 import registrationimg from "../assets/registrationimg.png";
 import ModalImage from "react-modal-image";
 import Button from "@mui/material/Button";
 import { useSelector } from "react-redux";
 const Chatbox = () => {
+  let userData = useSelector((state) => state.loggedUser.loginUser);
   let activeChat = useSelector((state) => state.activeChat.activeChat);
+
+  let [msg, setMsg] = useState("");
+
+  let handleChat = () => {
+    // console.log(userData);
+    // console.log(activeChat);
+    // console.log(msg);
+
+    let data = {
+      whosendname: userData.displayName,
+      whosendid: userData.uid,
+      whorecivename: activeChat.name,
+      whoreciveid: activeChat.id,
+      msg: msg,
+    };
+    console.log(data);
+  };
+
   return (
     <div className="chatbox">
       <div className="msgprofile">
@@ -115,9 +134,14 @@ const Chatbox = () => {
       </div>
       <div className="msgcontainer">
         <div className="msgwritecon">
-          <input className="msgwrite" />
+          <input
+            onChange={(e) => setMsg(e.target.value)}
+            className="msgwrite"
+          />
         </div>
-        <Button variant="contained">Contained</Button>
+        <Button variant="contained" onClick={handleChat}>
+          Send
+        </Button>
       </div>
     </div>
   );

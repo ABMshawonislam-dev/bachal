@@ -54,6 +54,15 @@ const MsgGroup = () => {
         id: item.groupid,
       })
     );
+
+    localStorage.setItem(
+      "activeChat",
+      JSON.stringify({
+        type: "groupmsg",
+        name: item.groupname,
+        id: item.groupid,
+      })
+    );
   };
 
   return (

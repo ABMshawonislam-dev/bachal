@@ -33,6 +33,40 @@ const Friends = ({ button }) => {
         }
       });
       setFriends(arr);
+      console.log("tintiantin", arr[0]);
+      if (arr[0].whosendid == userData.uid) {
+        dispatch(
+          activeChat({
+            type: "singlemsg",
+            name: arr[0].whoreceivename,
+            id: arr[0].whoreceiveid,
+          })
+        );
+        localStorage.setItem(
+          "activeChat",
+          JSON.stringify({
+            type: "singlemsg",
+            name: arr[0].whoreceivename,
+            id: arr[0].whoreceiveid,
+          })
+        );
+      } else {
+        dispatch(
+          activeChat({
+            type: "singlemsg",
+            name: arr[0].whosendname,
+            id: arr[0].whosendid,
+          })
+        );
+        localStorage.setItem(
+          "activeChat",
+          JSON.stringify({
+            type: "singlemsg",
+            name: arr[0].whosendname,
+            id: arr[0].whosendid,
+          })
+        );
+      }
     });
   }, []);
 
@@ -68,9 +102,16 @@ const Friends = ({ button }) => {
 
   let handleMsg = (item) => {
     if (item.whosendid == userData.uid) {
-
       dispatch(
         activeChat({
+          type: "singlemsg",
+          name: item.whoreceivename,
+          id: item.whoreceiveid,
+        })
+      );
+      localStorage.setItem(
+        "activeChat",
+        JSON.stringify({
           type: "singlemsg",
           name: item.whoreceivename,
           id: item.whoreceiveid,
@@ -79,6 +120,14 @@ const Friends = ({ button }) => {
     } else {
       dispatch(
         activeChat({
+          type: "singlemsg",
+          name: item.whosendname,
+          id: item.whosendid,
+        })
+      );
+      localStorage.setItem(
+        "activeChat",
+        JSON.stringify({
           type: "singlemsg",
           name: item.whosendname,
           id: item.whosendid,
