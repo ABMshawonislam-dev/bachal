@@ -57,16 +57,20 @@ const Login = () => {
         loading: false
       })
 
-     
-      if(!user.user.emailVerified){
-        notify("Please varify Email for login")
-      }else{
-
-        dispatch(userdata(user.user))
+      dispatch(userdata(user.user))
         localStorage.setItem("user",JSON.stringify(user.user))
         navigate("/bachal/home")
 
-      }
+     
+      // if(!user.user.emailVerified){
+      //   notify("Please varify Email for login")
+      // }else{
+
+      //   dispatch(userdata(user.user))
+      //   localStorage.setItem("user",JSON.stringify(user.user))
+      //   navigate("/bachal/home")
+
+      // }
 
    
     }).catch((error) => {

@@ -231,6 +231,8 @@ box-shadow: 0px 0px 34px 7px rgba(0,0,0,0.1);
   font-weight: bold;
   margin: 10px 0;
   align-self: flex-start;
+  max-width: 80%;
+  word-wrap: break-word;
 }
 
 .getimg{
@@ -261,6 +263,9 @@ box-shadow: 0px 0px 34px 7px rgba(0,0,0,0.1);
   margin: 10px 0;
   color: white;
   align-self: flex-end;
+  max-width: 80%;
+  word-wrap: break-word;
+
 }
 
 .sendimg{
@@ -273,6 +278,7 @@ box-shadow: 0px 0px 34px 7px rgba(0,0,0,0.1);
   align-self: flex-end;
   width: 250px;
   height: 250px;
+ 
 }
 
 .sendimg > div > img{
