@@ -175,36 +175,35 @@ ol {
   margin-top: 10px;
 }
 
-.chatbox{
+.chatbox {
   width: 90%;
   border-radius: 25px;
-   -webkit-box-shadow: 0px 0px 34px 7px rgba(0,0,0,0.1);
-  -moz-box-shadow: 0px 0px 34px 7px rgba(0,0,0,0.1);
-  box-shadow: 0px 0px 34px 7px rgba(0,0,0,0.1);
-  padding: 25px ;
+  -webkit-box-shadow: 0px 0px 34px 7px rgba(0, 0, 0, 0.1);
+  -moz-box-shadow: 0px 0px 34px 7px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 0px 34px 7px rgba(0, 0, 0, 0.1);
+  padding: 25px;
   box-sizing: border-box;
   margin: auto;
   /* height: 90vh; */
-
 }
 
-.msgbox{
+.msgbox {
   height: 80vh;
   overflow-y: scroll;
 }
 
-.msgprofile{
+.msgprofile {
   display: flex;
   align-items: center;
   column-gap: 15px;
-  border-bottom: 2px solid rgba(0, 0, 0,.25);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.25);
 }
 
-.signal{
+.signal {
   position: relative;
 }
 
-.round{
+.round {
   width: 13px;
   height: 13px;
   background: green;
@@ -213,18 +212,18 @@ ol {
   position: absolute;
   bottom: 4px;
   right: 5px;
-  -webkit-box-shadow: 0px 0px 34px 7px rgba(0,0,0,0.1);
--moz-box-shadow: 0px 0px 34px 7px rgba(0,0,0,0.1);
-box-shadow: 0px 0px 34px 7px rgba(0,0,0,0.1);
+  -webkit-box-shadow: 0px 0px 34px 7px rgba(0, 0, 0, 0.1);
+  -moz-box-shadow: 0px 0px 34px 7px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 0px 34px 7px rgba(0, 0, 0, 0.1);
 }
 
-.msg{
+.msg {
   display: flex;
   flex-direction: column;
 }
 
-.getmsg{
-  background: #F1F1F1;
+.getmsg {
+  background: #f1f1f1;
   display: inline-block;
   padding: 13px 52px;
   border-radius: 10px;
@@ -235,8 +234,8 @@ box-shadow: 0px 0px 34px 7px rgba(0,0,0,0.1);
   word-wrap: break-word;
 }
 
-.getimg{
-  background: #F1F1F1;
+.getimg {
+  background: #f1f1f1;
   display: inline-block;
   padding: 7px;
   border-radius: 10px;
@@ -247,15 +246,15 @@ box-shadow: 0px 0px 34px 7px rgba(0,0,0,0.1);
   height: 250px;
 }
 
-.getimg > div > img{
+.getimg > div > img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   border-radius: 10px;
 }
 
-.sendmsg{
-  background: #5F35F5;
+.sendmsg {
+  background: #5f35f5;
   display: inline-block;
   padding: 13px 52px;
   border-radius: 10px;
@@ -265,11 +264,10 @@ box-shadow: 0px 0px 34px 7px rgba(0,0,0,0.1);
   align-self: flex-end;
   max-width: 80%;
   word-wrap: break-word;
-
 }
 
-.sendimg{
-  background: #5F35F5;
+.sendimg {
+  background: #5f35f5;
   display: inline-block;
   padding: 7px;
   border-radius: 10px;
@@ -278,70 +276,89 @@ box-shadow: 0px 0px 34px 7px rgba(0,0,0,0.1);
   align-self: flex-end;
   width: 250px;
   height: 250px;
- 
 }
 
-.sendimg > div > img{
+.sendimg > div > img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   border-radius: 10px;
 }
 
-.time{
-  color: rgba(0, 0, 0,.65);
-
+.time {
+  color: rgba(0, 0, 0, 0.65);
 }
 
-.sendmsg + .time{
-  color: rgba(0, 0, 0,.65);
-    align-self: flex-end;
+.sendmsg + .time {
+  color: rgba(0, 0, 0, 0.65);
+  align-self: flex-end;
 }
 
-.sendimg + .time{
-  color: rgba(0, 0, 0,.65);
-    align-self: flex-end;
+.sendimg + .time {
+  color: rgba(0, 0, 0, 0.65);
+  align-self: flex-end;
 }
 
-.getimg > div{
-
+.getimg > div {
   height: 100%;
 }
 
-.sendimg > div{
-
+.sendimg > div {
   height: 100%;
 }
 
-
-.getaudio{
+.getaudio {
   display: inline-block;
   margin: 10px 0;
   align-self: flex-start;
 }
 
-.sendaudio{
+.sendaudio {
   display: inline-block;
   margin: 10px 0;
   align-self: flex-end;
 }
 
-.msgwritecon{
+.msgwritecon {
   width: 85%;
 
   border-radius: 10px;
+  position: relative;
 }
-.msgwrite{
+.msgwrite {
   width: 100%;
-  background: #F1F1F1;
+  background: #f1f1f1;
   border: 0;
   padding: 15px;
   border-radius: 10px;
 }
 
-.msgcontainer{
+.msgcontainer {
   display: flex;
   justify-content: space-between;
   padding: 25px 0;
   border-top: 2px solid #000000;
+}
+
+.emojiholder {
+  position: absolute;
+  bottom: 47px;
+  right: 0;
+}
+
+.audiocontainer {
+  position: absolute;
+  top: -2px;
+  right: -36px;
+  width: 105%;
+  z-index: 1;
+}
+
+.audio-recorder {
+  position: absolute;
+  top: 4px;
+  right: 50px;
+  z-index: 1;
+  background-color: transparent !important;
+  box-shadow: 0 2px 5px transparent !important;
 }
