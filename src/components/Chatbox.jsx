@@ -48,11 +48,12 @@ const Chatbox = () => {
   let [progress, setProgress] = useState(0);
   let [showemo, setShowemo] = useState(false);
   let [audiourl, setAudiourl] = useState("");
+  let [audiourlup, setAudiourlup] = useState("");
 
   const addAudioElement = (blob) => {
     const url = URL.createObjectURL(blob);
     setAudiourl(url);
-    console.log(blob);
+    setAudiourlup(blob);
   };
 
   let handleChat = () => {
@@ -156,7 +157,7 @@ const Chatbox = () => {
   };
 
   let handleImageUpload = (e) => {
-    console.log(e.target.files[0].name);
+    console.log(e.target.files[0]);
     const storageRef = imgref(storage, `${e.target.files[0].name}`);
     const uploadTask = uploadBytesResumable(storageRef, e.target.files[0]);
     uploadTask.on(
@@ -204,6 +205,55 @@ const Chatbox = () => {
   let handleEmoji = (emo) => {
     console.log(emo.emoji);
     setMsg(msg + emo.emoji);
+  };
+
+  let handleAudioChat = () => {
+    console.log(audiourl);
+    const storageRef = imgref(storage, audiourl);
+    const uploadTask = uploadBytesResumable(storageRef, audiourlup);
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        // Observe state change events such as progress, pause, and resume
+        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+        const progress =
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log("Upload is " + progress + "% done");
+        setProgress(progress);
+      },
+      (error) => {},
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          setProgress(0);
+          console.log(downloadURL);
+          setAudiourl("");
+          setAudiourlup("");
+          if (activeChat.type == "groupmsg") {
+            set(push(ref(db, "groupmsg")), {
+              whosendname: userData.displayName,
+              whosendid: userData.uid,
+              whorecivename: activeChat.name,
+              whoreciveid: activeChat.id,
+              audio: downloadURL,
+              date: `${new Date().getFullYear()}-${
+                new Date().getMonth() + 1
+              }-${new Date().getDate()} ${new Date().getHours()}:${new Date().getMinutes()}`,
+            });
+          } else {
+            set(push(ref(db, "signlemsg")), {
+              whosendname: userData.displayName,
+              whosendid: userData.uid,
+              whorecivename: activeChat.name,
+              whoreciveid: activeChat.id,
+              audio: downloadURL,
+              date: `${new Date().getFullYear()}-${
+                new Date().getMonth() + 1
+              }-${new Date().getDate()} ${new Date().getHours()}:${new Date().getMinutes()}`,
+            });
+          }
+        });
+      }
+    );
   };
 
   return (
@@ -272,9 +322,13 @@ const Chatbox = () => {
                 <div className="msg">
                   {item.msg ? (
                     <p className="sendmsg">{item.msg}</p>
-                  ) : (
+                  ) : item.img ? (
                     <p className="sendimg">
                       <ModalImage small={item.img} large={item.img} />
+                    </p>
+                  ) : (
+                    <p className="sendaudio">
+                      <audio src={item.audio} controls></audio>
                     </p>
                   )}
 
@@ -288,9 +342,13 @@ const Chatbox = () => {
                   <div className="msg">
                     {item.msg ? (
                       <p className="getmsg">{item.msg}</p>
-                    ) : (
+                    ) : item.img ? (
                       <p className="getimg">
                         <ModalImage small={item.img} large={item.img} />
+                      </p>
+                    ) : (
+                      <p className="getaudio">
+                        <audio src={item.audio} controls></audio>
                       </p>
                     )}
                     <p className="time">
@@ -306,9 +364,13 @@ const Chatbox = () => {
                 <div className="msg">
                   {item.msg ? (
                     <p className="sendmsg">{item.msg}</p>
-                  ) : (
+                  ) : item.img ? (
                     <p className="sendimg">
                       <ModalImage small={item.img} large={item.img} />
+                    </p>
+                  ) : (
+                    <p className="sendaudio">
+                      <audio src={item.audio} controls></audio>
                     </p>
                   )}
                   <p className="time">
@@ -320,9 +382,13 @@ const Chatbox = () => {
                   <div className="msg">
                     {item.msg ? (
                       <p className="getmsg">{item.msg}</p>
-                    ) : (
+                    ) : item.img ? (
                       <p className="getimg">
                         <ModalImage small={item.img} large={item.img} />
+                      </p>
+                    ) : (
+                      <p className="getaudio">
+                        <audio src={item.audio} controls></audio>
                       </p>
                     )}
                     <p className="time">
@@ -370,13 +436,20 @@ const Chatbox = () => {
           )}
         </div>
 
-        <Button variant="contained" onClick={handleChat}>
-          Send
-        </Button>
-        {audiourl && (
-          <Button variant="contained" onClick={() => setAudiourl("")}>
-            cancel
+        {!audiourl && (
+          <Button variant="contained" onClick={handleChat}>
+            Send
           </Button>
+        )}
+        {audiourl && (
+          <>
+            <Button variant="contained" onClick={handleAudioChat}>
+              Send Audio
+            </Button>
+            <Button variant="contained" onClick={() => setAudiourl("")}>
+              cancel
+            </Button>
+          </>
         )}
       </div>
       {progress != 0 && (
