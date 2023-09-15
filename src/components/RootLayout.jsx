@@ -10,7 +10,7 @@ import {
   AiOutlineLogout,
 } from "react-icons/ai";
 import { Link, useLocation } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector,useDispatch } from "react-redux";
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -18,7 +18,9 @@ import Modal from '@mui/material/Modal';
 import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
 import { ButtonBase } from "@mui/material";
-import { getStorage, ref, uploadString } from "firebase/storage";
+import { getStorage, ref, uploadString,getDownloadURL } from "firebase/storage";
+import { getDatabase, ref as rref, set } from "firebase/database";
+import { userdata } from "../slices/user/userSlice";
 
 
 const defaultSrc =
@@ -40,11 +42,13 @@ const style = {
 const RootLayout = (props) => {
   const location = useLocation();
   const storage = getStorage();
-  const storageRef = ref(storage, 'some-child');
-
+  const db = getDatabase();
+  let dispatch = useDispatch()
+  
   let userData = useSelector((state) => state.loggedUser.loginUser);
+  const storageRef = ref(storage, userData.uid);
   const [open, setOpen] = useState(false);
-  const [image, setImage] = useState(defaultSrc);
+  const [image, setImage] = useState("");
   const [cropData, setCropData] = useState("#");
   const cropperRef = createRef();
   const handleOpen = () => setOpen(true);
@@ -69,9 +73,23 @@ const RootLayout = (props) => {
     if (typeof cropperRef.current?.cropper !== "undefined") {
       setCropData(cropperRef.current?.cropper.getCroppedCanvas().toDataURL());
       const message4 = cropperRef.current?.cropper.getCroppedCanvas().toDataURL();
-uploadString(storageRef, message4, 'data_url').then((snapshot) => {
-  console.log('Uploaded a data_url string!');
-});
+      uploadString(storageRef, message4, 'data_url').then((snapshot) => {
+        console.log('Uploaded a data_url string!');
+        getDownloadURL(snapshot.ref).then((url)=>{
+          console.log(url)
+          set(rref(db, 'users/' + userData.uid), {
+            username: userData.displayName,
+            email: userData.email,
+            profile_picture : url
+          }).then((user)=>{
+            localStorage.setItem("user",JSON.stringify({...userData,photoURL:url}))
+            dispatch(userdata({...userData,photoURL:url}))
+          }).then(()=>{
+            setOpen(false)
+            setImage("")
+          })
+        })
+      });
     }
 
   };
@@ -84,7 +102,7 @@ uploadString(storageRef, message4, 'data_url').then((snapshot) => {
         <Grid item xs={1}>
           <div className="navbar">
             <div className="navcontainer">
-              <img onClick={handleOpen} src={profile} />
+              <img onClick={handleOpen} src={userData.photoURL} />
               <h4 className="username">{userData.displayName}</h4>
               <ul>
                 <li>
@@ -134,26 +152,34 @@ uploadString(storageRef, message4, 'data_url').then((snapshot) => {
             Text in a modal
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                  <div className="imgbox">
+          {image&&<div className="imgbox">
                   <div className="img-preview"></div>
-                  </div>
+                  </div>}
           <input type="file" onChange={onChange} />
+          {image 
+          ?
+          <>
+          
           <Cropper
           ref={cropperRef}
-          style={{ height: 400, width: "100%" }}
           zoomTo={0.5}
-          initialAspectRatio={1}
           preview=".img-preview"
           src={image}
           viewMode={1}
-          minCropBoxHeight={100}
-          minCropBoxWidth={100}
           background={false}
           responsive={true}
           autoCropArea={1}
           checkOrientation={false} // https://github.com/fengyuanchen/cropperjs/issues/671
           guides={true}
         />
+          </>
+          :
+          <div className="imgbox">
+
+            <img style={{width:"100px",height:"100px",borderRadius:"50%"}} src={userData.photoURL}/>
+          </div>
+          }
+          
         <Button onClick={handleCropData}>Upload</Button>
           </Typography>
         </Box>
